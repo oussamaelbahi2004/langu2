@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Français Master - L'App</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        app: {
+                            bg: '#F3F4F6',
+                            primary: '#6366F1', // Indigo
+                            secondary: '#8B5CF6', // Purple
+                            accent: '#EC4899', // Pink
+                            surface: '#FFFFFF',
+                            text: '#1F2937',
+                            muted: '#6B7280'
+                        }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.5s ease-out forwards',
+                        'slide-in-right': 'slideInRight 0.4s ease-out forwards',
+                        'bounce-slight': 'bounceSlight 2s infinite ease-in-out',
+                        'pulse-glow': 'pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'pop-in': 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        slideInRight: {
+                            '0%': { opacity: '0', transform: 'translateX(30px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' },
+                        },
+                        bounceSlight: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-5px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: 1, boxShadow: '0 0 0 0 rgba(99, 102, 241, 0.4)' },
+                            '50%': { opacity: .8, boxShadow: '0 0 0 10px rgba(99, 102, 241, 0)' },
+                        },
+                        popIn: {
+                            '0%': { opacity: 0, transform: 'scale(0.8)' },
+                            '100%': { opacity: 1, transform: 'scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #e2e8f0; margin: 0; padding: 0; display: flex; justify-content: center; min-height: 100vh; }
+        #root { width: 100%; max-w: 480px; background-color: #F9FAFB; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .glass-nav { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border-top: 1px solid rgba(255, 255, 255, 0.3); }
+        .markdown-content strong { color: #4F46E5; font-weight: 700; }
+        .markdown-content ul { list-style-type: none; padding-left: 0; }
+        .markdown-content li { position: relative; padding-left: 1.5rem; margin-bottom: 0.5rem; }
+        .markdown-content li::before { content: "•"; color: #6366F1; font-weight: bold; position: absolute; left: 0; font-size: 1.2rem; line-height: 1; }
+        .markdown-content p { margin-bottom: 1rem; line-height: 1.6; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const COURSE_DATA = [
+            {
+                id: 1,
+                title: "La Presse & L'Information",
+                icon: "fa-newspaper",
+                color: "from-blue-500 to-indigo-600",
+                lessons: [
+                    {
+                        title: "1. S'informer & 2. Les moyens",
+                        content: `
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">1. S'informer (Définition)</h3>
+                            <p><strong>C'est quoi ?</strong> S'informer, c'est chercher, recevoir et comprendre les nouvelles (les événements) qui se passent dans le monde ou dans ton pays.</p>
+                            <p><strong>Pourquoi c'est important ?</strong> Ça sert à :</p>
+                            <ul>
+                                <li>Comprendre le monde autour de nous.</li>
+                                <li>Avoir un "esprit critique" (c'est-à-dire savoir réfléchir et ne pas tout croire aveuglément).</li>
+                                <li>Pouvoir donner son opinion et participer à la société.</li>
+                            </ul>
+                            
+                            <hr class="my-6 border-gray-200" />
+                            
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">2. Les moyens pour s'informer</h3>
+                            <p>Où trouver l'information ? Il y a 3 grands moyens (supports) :</p>
+                            <ul>
+                                <li><strong>La presse écrite :</strong> Les journaux en papier ou magazines (Exemple : Le Monde, Le Figaro).</li>
+                                <li><strong>Les médias audiovisuels :</strong> La télévision et la radio (Exemple : France 24).</li>
+                                <li><strong>Les médias numériques :</strong> Internet, les réseaux sociaux, les sites web et les applications sur le téléphone (C'est ce qu'on utilise le plus aujourd'hui).</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        title: "3. Le Titre & 4. Choix des mots",
+                        content: `
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">3. Le titre de presse</h3>
+                            <p>Le titre, c'est la première chose que le lecteur voit avant de lire l'article. Il a 4 missions principales :</p>
+                            <ul>
+                                <li><strong>Informer :</strong> Dire directement de quoi parle l'article.</li>
+                                <li><strong>Attirer l'attention :</strong> Donner envie au lecteur d'acheter le journal ou de cliquer sur le lien.</li>
+                                <li><strong>Résumer :</strong> Donner l'idée principale très vite.</li>
+                                <li><strong>Orienter :</strong> Préparer le lecteur à comprendre l'article d'une certaine façon.</li>
+                            </ul>
+
+                            <hr class="my-6 border-gray-200" />
+
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">4. Le titre comme construction discursive</h3>
+                            <p>Un titre n'est <strong>jamais neutre</strong> (il n'est jamais simple ou innocent). Le journaliste choisit des mots précis pour avoir un effet sur le lecteur :</p>
+                            <ul>
+                                <li><strong>Valoriser :</strong> Donner une très grande importance à un événement (Exemple : dire "Victoire historique" au lieu de juste "Victoire").</li>
+                                <li><strong>Dramatiser :</strong> Rendre l'événement plus grave, triste ou choquant.</li>
+                                <li><strong>Orienter l'opinion :</strong> Influencer ce que le lecteur va penser avant même de lire le texte.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        title: "5. Objectivité et subjectivité",
+                        content: `
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">5. Objectivité et subjectivité</h3>
+                            <p>C'est la différence entre les faits réels et l'opinion personnelle :</p>
+                            
+                            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4 rounded-r-lg">
+                                <h4 class="font-bold text-blue-800 mb-1">L'Objectivité (être neutre)</h4>
+                                <p class="text-blue-900 text-sm">Le journaliste raconte seulement les faits réels. Il ne donne pas son opinion, il ne juge pas, et il vérifie ses sources. C'est 100% neutre.</p>
+                            </div>
+
+                            <div class="bg-purple-50 border-l-4 border-purple-500 p-4 rounded-r-lg">
+                                <h4 class="font-bold text-purple-800 mb-1">La Subjectivité (donner son avis)</h4>
+                                <p class="text-purple-900 text-sm">Le journaliste montre son avis ou ses émotions. Il utilise des mots orientés, des adjectifs forts, ou exagère (dramatisation) pour influencer le lecteur. (Même si le titre a l'air de donner une vraie info, les mots choisis cachent l'opinion du journaliste).</p>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "6. Le lexique du journalisme",
+                        content: `
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">6. Le vocabulaire de "La Une"</h3>
+                            <p>"La Une" est la première page d'un journal. Il faut connaître le nom de chaque partie :</p>
+                            
+                            <div class="grid grid-cols-1 gap-3">
+                                <div class="bg-white p-3 rounded shadow-sm border border-gray-100"><strong>La manchette :</strong> Tout en haut. Nom du journal, date et prix.</div>
+                                <div class="bg-white p-3 rounded shadow-sm border border-gray-100"><strong>Le bandeau :</strong> Ligne au-dessus de la manchette pour attirer l'attention.</div>
+                                <div class="bg-white p-3 rounded shadow-sm border border-gray-100"><strong>Le gros titre :</strong> Écrit en très grand. L'info la plus importante.</div>
+                                <div class="bg-white p-3 rounded shadow-sm border border-gray-100"><strong>Le chapeau (sous-titre) :</strong> Petit texte sous le titre. Il résume l'article.</div>
+                                <div class="bg-white p-3 rounded shadow-sm border border-gray-100"><strong>Le ventre :</strong> Le centre de la page.</div>
+                                <div class="bg-white p-3 rounded shadow-sm border border-gray-100"><strong>L'illustration :</strong> La photo, l'image ou le dessin.</div>
+                                <div class="bg-white p-3 rounded shadow-sm border border-gray-100"><strong>Le rez-de-chaussée :</strong> Tout en bas (pied de page). Souvent de la pub.</div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "7. Langue : Phrase nominale",
+                        content: `
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">A. La phrase nominale</h3>
+                            <p><strong>Définition :</strong> C'est une phrase sans verbe conjugué. Le mot le plus important est un nom.</p>
+                            <p><strong>Pourquoi on l'utilise ?</strong></p>
+                            <ul>
+                                <li>Pour rendre le titre très court.</li>
+                                <li>Pour résumer l'information principale.</li>
+                                <li>Pour attirer l'attention (lecture rapide).</li>
+                                <li>Pour donner un effet de choc, de force ou d'urgence.</li>
+                            </ul>
+                            <p class="text-sm italic text-gray-600">(Le journaliste supprime le verbe et les petits mots inutiles).</p>
+                            
+                            <h4 class="font-bold mt-4 mb-2 text-indigo-600">Les différentes formes :</h4>
+                            <ul class="text-sm">
+                                <li><strong>Nom seul :</strong> Tempête.</li>
+                                <li><strong>Nom + adjectif :</strong> Victoire historique.</li>
+                                <li><strong>Nom + complément :</strong> Hausse des prix.</li>
+                                <li><strong>Groupe nominal long :</strong> Risque d'incendie très élevé dans la région.</li>
+                            </ul>
+
+                            <hr class="my-6 border-gray-200" />
+                            
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">B. La ponctuation</h3>
+                            <ul class="text-sm">
+                                <li><strong>Point ( . ) :</strong> Fin de phrase.</li>
+                                <li><strong>Point d'exclamation ( ! ) :</strong> Surprise, choc.</li>
+                                <li><strong>Point d'interrogation ( ? ) :</strong> Question.</li>
+                                <li><strong>Virgule ( , ) :</strong> Petite pause.</li>
+                                <li><strong>Deux-points ( : ) :</strong> Avant une explication ou liste.</li>
+                                <li><strong>Points de suspension ( ... ) :</strong> Phrase non finie.</li>
+                                <li><strong>Guillemets ( " " ) :</strong> Citation (quelqu'un parle).</li>
+                                <li><strong>Tiret ( - ) :</strong> Liste ou dialogue.</li>
+                            </ul>
+                        `
+                    }
+                ]
+            },
+            {
+                id: 2,
+                title: "Le Passé Composé",
+                icon: "fa-clock-rotate-left",
+                color: "from-emerald-400 to-teal-500",
+                lessons: [
+                    {
+                        title: "1. Définition et 2. Structure",
+                        content: `
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">1. Définition et valeur</h3>
+                            <p>Le passé composé est un temps du passé. Il sert à exprimer une action qui est <strong>déjà terminée</strong> au moment où l'on parle.</p>
+                            <p>On l'utilise pour 4 raisons :</p>
+                            <ul>
+                                <li><strong>Action achevée :</strong> L'action est totalement finie. (Ex: <em>J'ai fini mon travail.</em>)</li>
+                                <li><strong>Action ponctuelle :</strong> Une action courte et rapide. (Ex: <em>Il a fermé la porte.</em>)</li>
+                                <li><strong>Succession d'actions :</strong> (Ex: <em>Je suis entré, j'ai vu, j'ai compris.</em>)</li>
+                                <li><strong>Conséquence dans le présent :</strong> L'action s'est passée avant, mais le résultat est encore visible. (Ex: <em>J'ai perdu mes clés -> je ne peux pas ouvrir la porte maintenant</em>).</li>
+                            </ul>
+
+                            <hr class="my-6 border-gray-200" />
+
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">2. La structure</h3>
+                            <div class="bg-gray-800 text-white p-4 rounded-xl text-center shadow-lg font-mono text-sm">
+                                Sujet + Auxiliaire (Être/Avoir) au présent + Participe passé
+                            </div>
+                            <ul class="mt-4">
+                                <li><strong>Exemple 1 :</strong> J'<strong>ai mangé</strong>. (ai = avoir, mangé = p.passé)</li>
+                                <li><strong>Exemple 2 :</strong> Elle <strong>est partie</strong>. (est = être, partie = p.passé)</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        title: "3. Les auxiliaires: Avoir ou Être?",
+                        content: `
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">3. Quand utiliser AVOIR ou ÊTRE ?</h3>
+                            
+                            <div class="mb-4">
+                                <h4 class="font-bold text-indigo-600 mb-1">L'auxiliaire AVOIR :</h4>
+                                <p>On l'utilise pour la grande majorité des verbes en français.</p>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="font-bold text-teal-600 mb-1">L'auxiliaire ÊTRE (2 cas seulement) :</h4>
+                                <ul class="mt-2">
+                                    <li><strong>Les verbes pronominaux :</strong> Qui commencent par "se" (se laver, se lever...).</li>
+                                    <li><strong>Les verbes de mouvement (La maison d'être) :</strong> aller, venir, arriver, partir, entrer, sortir, monter, descendre, naître, mourir, tomber, rester, etc.</li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded mt-6">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <i class="fa-solid fa-triangle-exclamation text-yellow-500"></i>
+                                    <h4 class="font-bold text-yellow-800">L'exception des 5 verbes</h4>
+                                </div>
+                                <p class="text-sm text-yellow-900">Les verbes <strong>monter, descendre, sortir, entrer, passer</strong> utilisent normalement "ÊTRE". Mais s'ils sont suivis d'un objet (COD) juste après, ils utilisent "AVOIR".</p>
+                                <ul class="text-sm text-yellow-900 mt-2">
+                                    <li>Avec Être : <em>Il est sorti.</em> (Il sort lui-même)</li>
+                                    <li>Avec Avoir : <em>Il a sorti le chien.</em> (Il y a un objet après)</li>
+                                </ul>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "4. Participe passé et 5. Accord",
+                        content: `
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">4. Le participe passé</h3>
+                            <ul>
+                                <li><strong>1er groupe (-er) :</strong> finit par <strong>é</strong> (chercher -> cherché)</li>
+                                <li><strong>2ème groupe (-ir) :</strong> finit par <strong>i</strong> (finir -> fini)</li>
+                                <li><strong>3ème groupe :</strong> finit souvent par <strong>i, u ou t</strong> (partir -> parti, entendre -> entendu, dire -> dit).</li>
+                                <li><strong>Irréguliers :</strong> À mémoriser ! (Avoir->eu, Prendre->pris, Faire->fait, Voir->vu)</li>
+                            </ul>
+
+                            <hr class="my-6 border-gray-200" />
+
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">5. L'accord du participe passé</h3>
+                            
+                            <div class="grid gap-4">
+                                <div class="bg-green-50 p-3 rounded border border-green-200">
+                                    <strong>Avec ÊTRE :</strong> S'accorde TOUJOURS avec le Sujet. <br>
+                                    <span class="text-sm italic">Ex: Elle est sorti<strong>e</strong>. Ils sont rentré<strong>s</strong>.</span>
+                                </div>
+                                
+                                <div class="bg-blue-50 p-3 rounded border border-blue-200">
+                                    <strong>Avec AVOIR :</strong> Ne s'accorde JAMAIS avec le sujet ! Il s'accorde avec le COD seulement s'il est AVANT le verbe. <br>
+                                    <span class="text-sm italic">Ex sans accord: J'ai acheté des fleurs.<br>Ex avec accord: Les fleurs que j'ai acheté<strong>es</strong>.</span>
+                                </div>
+                                
+                                <div class="bg-purple-50 p-3 rounded border border-purple-200">
+                                    <strong>Avec les verbes pronominaux :</strong> Accord avec le sujet en général (Elle s'est lavé<strong>e</strong>). Pas d'accord si l'objet (partie du corps) est après (Elle s'est lavé les cheveux).
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "6. Négation & 7. Lexique",
+                        content: `
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">6. La négation au passé composé</h3>
+                            <p>Règle simple : On place "pas", "rien", "jamais" <strong>entre l'auxiliaire et le participe passé</strong>. Comme un sandwich !</p>
+                            <ul>
+                                <li><strong>NE...PAS :</strong> Je n'ai <strong>pas</strong> étudié.</li>
+                                <li><strong>NE...RIEN :</strong> Il n'a <strong>rien</strong> fait.</li>
+                                <li><strong>NE...JAMAIS :</strong> Tu n'es <strong>jamais</strong> allé.</li>
+                            </ul>
+                            
+                            <div class="bg-red-50 p-3 rounded border-l-4 border-red-500 my-4 text-sm">
+                                <strong>⚠️ Exception :</strong> "personne" et "aucun" se placent tout à la fin ! <br>
+                                <em>Elle n'a vu personne.</em> (Pas entre les deux)
+                            </div>
+
+                            <hr class="my-6 border-gray-200" />
+
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">7. Lexique de l'université</h3>
+                            <ul class="text-sm">
+                                <li><strong>Les Personnes :</strong> professeur, enseignant, formateur, doyen, étudiants...</li>
+                                <li><strong>Les Lieux :</strong> faculté, département, campus, amphi, bibliothèque...</li>
+                                <li><strong>Les Études :</strong> licence, master, doctorat, semestre, modules, programme...</li>
+                                <li><strong>Les Actions :</strong> assister aux cours, prendre des notes, passer des examens, obtenir un diplôme...</li>
+                            </ul>
+                        `
+                    }
+                ]
+            },
+            {
+                id: 3,
+                title: "Le Fait Divers",
+                icon: "fa-mask",
+                color: "from-rose-400 to-red-500",
+                lessons: [
+                    {
+                        title: "1. Définition et 2. Structure",
+                        content: `
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">1. Qu'est-ce qu'un fait divers ?</h3>
+                            <p>C'est un court article de presse qui raconte un événement de la vie de tous les jours. Ce n'est pas de la politique ou de l'économie.</p>
+                            <p>Il s'agit souvent de :</p>
+                            <ul>
+                                <li><strong>Accidents :</strong> accident de voiture, incendie...</li>
+                                <li><strong>Délits ou crimes :</strong> vol, meurtre...</li>
+                                <li><strong>Événements insolites :</strong> une histoire bizarre ou amusante.</li>
+                            </ul>
+
+                            <hr class="my-6 border-gray-200" />
+
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">2. La structure (Organisation)</h3>
+                            <div class="flex flex-col gap-2">
+                                <div class="bg-white p-3 rounded shadow-sm border-l-4 border-red-400">
+                                    <strong>L'appel de titre :</strong> Nom du journal, date, et rubrique (ex: "Société").
+                                </div>
+                                <div class="bg-white p-3 rounded shadow-sm border-l-4 border-red-500">
+                                    <strong>Le titre principal :</strong> Attire l'attention (souvent une "phrase nominale").
+                                </div>
+                                <div class="bg-white p-3 rounded shadow-sm border-l-4 border-red-600">
+                                    <strong>L'attaque :</strong> La 1ère phrase qui résume vite l'info.
+                                </div>
+                                <div class="bg-white p-3 rounded shadow-sm border-l-4 border-red-700">
+                                    <strong>Le récit :</strong> Le corps du texte avec tous les détails de l'histoire.
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "3. Questions de base & Grammaire",
+                        content: `
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">3. Les questions de base (Le contenu)</h3>
+                            <p>Un bon fait divers doit répondre à 6 questions :</p>
+                            <ul class="grid grid-cols-2 gap-2 text-sm">
+                                <li class="bg-gray-100 p-2 rounded"><strong>Qui ?</strong> (Les personnes)</li>
+                                <li class="bg-gray-100 p-2 rounded"><strong>Quoi ?</strong> (L'événement)</li>
+                                <li class="bg-gray-100 p-2 rounded"><strong>Où ?</strong> (Le lieu)</li>
+                                <li class="bg-gray-100 p-2 rounded"><strong>Quand ?</strong> (Date/Heure)</li>
+                                <li class="bg-gray-100 p-2 rounded col-span-2"><strong>Pourquoi / Comment ?</strong> (Causes)</li>
+                                <li class="bg-gray-100 p-2 rounded col-span-2"><strong>Conséquences ?</strong> (Blessés, arrestation...)</li>
+                            </ul>
+
+                            <hr class="my-6 border-gray-200" />
+
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">4. Grammaire et Temps</h3>
+                            <p>Pour raconter une histoire passée, le journaliste utilise :</p>
+                            
+                            <div class="bg-gradient-to-r from-red-50 to-orange-50 p-4 rounded-xl mb-3 border border-red-100">
+                                <h4 class="font-bold text-red-600">Le Passé Composé</h4>
+                                <p class="text-sm">Pour les <strong>actions courtes et terminées</strong>.<br><em>Ex : Il a glissé et il est tombé.</em></p>
+                            </div>
+
+                            <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-xl border border-blue-100">
+                                <h4 class="font-bold text-blue-600">L'Imparfait</h4>
+                                <p class="text-sm">Pour la <strong>description</strong> et les circonstances au moment de l'accident.<br><em>Ex : Il pleuvait et la victime marchait.</em></p>
+                            </div>
+                        `
+                    }
+                ]
+            },
+            {
+                id: 4,
+                title: "L'Imparfait & Le Futur",
+                icon: "fa-forward-fast",
+                color: "from-amber-400 to-orange-500",
+                lessons: [
+                    {
+                        title: "1. L'Imparfait",
+                        content: `
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">1. L'IMPARFAIT (Temps de la description)</h3>
+                            
+                            <h4 class="font-bold text-amber-600 mt-4 mb-2">A. Quand l'utiliser ?</h4>
+                            <ul>
+                                <li><strong>Décrire :</strong> le décor, personnes, climat. (<em>Il faisait beau.</em>)</li>
+                                <li><strong>Habitude dans le passé :</strong> (<em>Chaque matin, je buvais...</em>)</li>
+                                <li><strong>Action longue coupée par une action courte :</strong> (<em>Je regardais la télé quand il a frappé à la porte.</em>)</li>
+                            </ul>
+
+                            <h4 class="font-bold text-amber-600 mt-6 mb-2">B. Comment le former ?</h4>
+                            <p class="text-sm bg-amber-50 p-3 rounded mb-2">Prendre le verbe avec "Nous" au présent, enlever le "ons", et ajouter : <strong>-ais, -ais, -ait, -ions, -iez, -aient</strong>.</p>
+                            
+                            <p class="text-sm">Exemple (Finir) : Nous finiss(ons) -> <em>Je finissais, Tu finissais, Il finissait, Nous finissions...</em></p>
+                            
+                            <div class="bg-red-50 border-l-4 border-red-500 p-3 mt-4 text-sm rounded">
+                                <strong>⚠️ Exception (Verbe ÊTRE) :</strong><br>
+                                J'étais, tu étais, il était, nous étions, vous étiez, ils étaient.
+                            </div>
+                        `
+                    },
+                    {
+                        title: "2. Le Futur",
+                        content: `
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">2. LE FUTUR (Pour l'avenir)</h3>
+                            <p>Il y a deux manières de parler du futur :</p>
+                            
+                            <div class="bg-white rounded-xl shadow-md p-4 mb-4 border border-gray-100">
+                                <h4 class="font-bold text-orange-600 border-b pb-2 mb-2">A. Le Futur Proche (C'est pour bientôt)</h4>
+                                <p class="text-sm mb-2">Pour une action qui va se passer très vite ou certaine.</p>
+                                <div class="bg-gray-100 p-2 text-center rounded text-sm font-mono font-bold text-gray-700">ALLER (présent) + Verbe à l'infinitif</div>
+                                <p class="text-sm mt-2 italic text-gray-600">Ex : Je vais partir. / Il va pleuvoir.</p>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-md p-4 border border-gray-100">
+                                <h4 class="font-bold text-orange-600 border-b pb-2 mb-2">B. Le Futur Simple (Projets/Prédictions)</h4>
+                                <p class="text-sm mb-2">Pour imaginer l'avenir, faire des projets.</p>
+                                <div class="bg-gray-100 p-2 text-center rounded text-sm font-mono font-bold text-gray-700">Verbe entier + ai, as, a, ons, ez, ont</div>
+                                <p class="text-sm mt-2 italic text-gray-600 mb-4">Ex : Je parlerai, Tu parleras, Il parlera...</p>
+                                
+                                <h5 class="font-bold text-xs text-gray-500 uppercase">Exceptions à retenir :</h5>
+                                <ul class="text-sm grid grid-cols-2 mt-1">
+                                    <li>Être -> Je serai</li>
+                                    <li>Avoir -> J'aurai</li>
+                                    <li>Aller -> J'irai</li>
+                                    <li>Faire -> Je ferai</li>
+                                </ul>
+                            </div>
+                        `
+                    }
+                ]
+            }
+        ];
+
+        const QUIZ_DATA = [
+            // NIVEAU 1
+            { level: 1, text: "Niveau 1 : Facile", q: "\"S'informer\" signifie :", options: ["Écrire un roman de fiction.", "Chercher, recevoir et comprendre l'information.", "Regarder un match de foot."], correct: 1 },
+            { level: 1, text: "Niveau 1 : Facile", q: "La radio et la télévision font partie des :", options: ["Médias numériques.", "Médias audiovisuels.", "Médias de la presse écrite."], correct: 1 },
+            { level: 1, text: "Niveau 1 : Facile", q: "Le but principal d'un titre de presse est de :", options: ["Informer et attirer l'attention.", "Raconter toute l'histoire en détail.", "Remplacer l'image de l'article."], correct: 0 },
+            { level: 1, text: "Niveau 1 : Facile", q: "Une phrase nominale est une phrase qui ne contient pas de :", options: ["Nom.", "Adjectif.", "Verbe conjugué."], correct: 2 },
+            { level: 1, text: "Niveau 1 : Facile", q: "Dans le journalisme, \"La manchette\" se trouve :", options: ["Tout en haut de la page (La Une).", "Au centre de la page (Le ventre).", "Tout en bas de la page (Le rez-de-chaussée)."], correct: 0 },
+            { level: 1, text: "Niveau 1 : Facile", q: "Le passé composé exprime principalement :", options: ["Une action en cours dans le présent.", "Une action terminée au moment où l'on parle.", "Une habitude ancienne."], correct: 1 },
+            { level: 1, text: "Niveau 1 : Facile", q: "Parmi ces verbes, lequel se conjugue TOUJOURS avec l'auxiliaire ÊTRE ?", options: ["Choisir.", "Se laver.", "Comprendre."], correct: 1 },
+            { level: 1, text: "Niveau 1 : Facile", q: "Le participe passé d'un verbe du 1er groupe (ex: chercher) se termine par :", options: ["-u", "-i", "-é"], correct: 2 },
+            { level: 1, text: "Niveau 1 : Facile", q: "Dans le lexique universitaire, \"L'amphithéâtre\" est :", options: ["Une personne.", "Un lieu.", "Un diplôme."], correct: 1 },
+            { level: 1, text: "Niveau 1 : Facile", q: "Un \"Fait Divers\" raconte :", options: ["Un événement vrai de la vie quotidienne.", "L'histoire d'un roi ancien.", "La politique internationale."], correct: 0 },
+            // NIVEAU 2
+            { level: 2, text: "Niveau 2 : Moyen", q: "Un titre de presse qui utilise des adjectifs forts pour \"dramatiser\" un événement est un titre :", options: ["Objectif.", "Subjectif.", "Incomplet."], correct: 1 },
+            { level: 2, text: "Niveau 2 : Moyen", q: "La phrase nominale \"Hausse des prix\" est formée par la structure :", options: ["Nom seul.", "Nom + Adjectif.", "Nom + Complément du nom."], correct: 2 },
+            { level: 2, text: "Niveau 2 : Moyen", q: "Dans la ponctuation, quel signe indique qu'une phrase ou une liste n'est pas terminée ?", options: ["Les deux-points ( : )", "Les points de suspension ( ... )", "Les guillemets ( \" \" )"], correct: 1 },
+            { level: 2, text: "Niveau 2 : Moyen", q: "À quoi sert le \"chapeau\" d'un article ?", options: ["À résumer l'article juste en dessous du titre.", "À afficher le prix du journal.", "À décorer la page."], correct: 0 },
+            { level: 2, text: "Niveau 2 : Moyen", q: "Conjugaison pronominale : Quelle phrase est grammaticalement correcte ?", options: ["Elle s'a lavé.", "Elle s'est lavée.", "Elle s'est lavé."], correct: 1 },
+            { level: 2, text: "Niveau 2 : Moyen", q: "Quel est le participe passé correct du verbe \"Prendre\" ?", options: ["Prendu.", "Prent.", "Pris."], correct: 2 },
+            { level: 2, text: "Niveau 2 : Moyen", q: "\"Il _____ le chien.\" Quel auxiliaire utiliser pour le verbe \"sortir\" ici ?", options: ["est sorti", "a sorti", "a sortis"], correct: 1 },
+            { level: 2, text: "Niveau 2 : Moyen", q: "Laquelle de ces actions est une \"action ponctuelle\" (courte) au passé composé ?", options: ["Il a fermé la porte.", "Il pleuvait beaucoup.", "La voiture était rouge."], correct: 0 },
+            { level: 2, text: "Niveau 2 : Moyen", q: "À l'université, qui est le responsable principal d'une faculté ?", options: ["Le doyen.", "L'étudiant.", "Le vigile."], correct: 0 },
+            { level: 2, text: "Niveau 2 : Moyen", q: "Dans un Fait Divers, \"l'attaque\" (la toute première phrase) sert à :", options: ["Décrire le paysage en détail.", "Résumer l'essentiel de l'événement très rapidement.", "Poser une devinette au lecteur."], correct: 1 },
+            // NIVEAU 3
+            { level: 3, text: "Niveau 3 : Difficile", q: "Accord avec AVOIR : Quelle phrase est parfaitement orthographiée ?", options: ["Les fleurs que j'ai acheté sont belles.", "J'ai achetées des fleurs.", "Les fleurs que j'ai achetées sont belles."], correct: 2 },
+            { level: 3, text: "Niveau 3 : Difficile", q: "Négation : Quelle est la position correcte du mot \"personne\" ?", options: ["Elle n'a vu personne.", "Elle n'a personne vu.", "Elle ne personne a vu."], correct: 0 },
+            { level: 3, text: "Niveau 3 : Difficile", q: "Les verbes \"Monter, descendre, sortir, entrer, passer\" se conjuguent avec AVOIR uniquement quand :", options: ["Ils sont au pluriel.", "Ils sont suivis d'un COD.", "L'action se passe à l'intérieur."], correct: 1 },
+            { level: 3, text: "Niveau 3 : Difficile", q: "Transformez en phrase nominale : \"Les étudiants organisent un festival culturel.\"", options: ["Les étudiants vont organiser un festival.", "Organisation d'un festival culturel par les étudiants.", "Les étudiants ont organisé un festival culturel."], correct: 1 },
+            { level: 3, text: "Niveau 3 : Difficile", q: "Accord des verbes pronominaux (Le piège) : Quelle phrase est correcte ?", options: ["Elles se sont lavées les mains.", "Elles se sont lavé les mains.", "Elles se sont lavés les mains."], correct: 1 },
+            { level: 3, text: "Niveau 3 : Difficile", q: "\"Un bébé, qui jouait avec un autre enfant...\" Pourquoi le verbe \"jouait\" est-il à l'imparfait ?", options: ["C'est une action soudaine.", "C'est la conséquence dans le présent.", "C'est une action longue / une description."], correct: 2 },
+            { level: 3, text: "Niveau 3 : Difficile", q: "Dans l'anatomie de La Une, le \"rez-de-chaussée\" est souvent réservé à :", options: ["L'image la plus importante du jour.", "La publicité, tout en bas de la page.", "Le nom du journal."], correct: 1 },
+            { level: 3, text: "Niveau 3 : Difficile", q: "Trouvez l'intrus (qui ne fait PAS partie de la liste des verbes de la \"Maison d'Être\") :", options: ["Tomber.", "Mourir.", "Regarder.", "Rester."], correct: 2 },
+            { level: 3, text: "Niveau 3 : Difficile", q: "Quels sont les participes passés respectifs des verbes \"Mettre\" et \"Dire\" ?", options: ["Mis / Dit.", "Mets / Dis.", "Metté / Diré.", "Met / Di."], correct: 0 },
+            { level: 3, text: "Niveau 3 : Difficile", q: "Un bon Fait Divers doit obligatoirement répondre à ces 6 questions de base :", options: ["Qui, quoi, où, quand, pourquoi, comment.", "Qui, combien, avec qui, peut-être, si, comment.", "Où, si, alors que, néanmoins, pourquoi, quand."], correct: 0 }
+        ];
+
+        const { useState, useEffect } = React;
+
+        const CircularProgress = ({ progress, color }) => {
+            const radius = 18;
+            const circumference = 2 * Math.PI * radius;
+            const strokeDashoffset = circumference - (progress / 100) * circumference;
+
+            return (
+                <div class="relative w-12 h-12 flex items-center justify-center">
+                    <svg class="transform -rotate-90 w-12 h-12">
+                        <circle cx="24" cy="24" r="18" stroke="#E5E7EB" strokeWidth="4" fill="transparent" />
+                        <circle 
+                            cx="24" cy="24" r="18" 
+                            stroke="currentColor" 
+                            strokeWidth="4" 
+                            fill="transparent" 
+                            strokeDasharray={circumference} 
+                            strokeDashoffset={strokeDashoffset} 
+                            class={`transition-all duration-1000 ease-out text-${color.split('-')[1]}-500`}
+                        />
+                    </svg>
+                    <span class="absolute text-xs font-bold text-gray-600">{Math.round(progress)}%</span>
+                </div>
+            );
+        };
+
+        const Dashboard = ({ onSelectModule, onStartQuiz, progressData, quizScore }) => {
+            return (
+                <div class="flex-1 overflow-y-auto hide-scrollbar pb-24 animate-fade-in-up">
+                    <div class="px-6 py-8 bg-gradient-to-b from-indigo-50 to-transparent">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Bonjour ! 👋</h1>
+                                <p class="text-indigo-600 font-medium">Prêt à valider tes modules ?</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center animate-bounce-slight text-xl">
+                                🎓
+                            </div>
+                        </div>
+
+                        {/* Carte Le Grand Test */}
+                        <div 
+                            onClick={onStartQuiz}
+                            class="bg-gradient-to-r from-yellow-400 to-amber-500 rounded-2xl p-1 shadow-lg cursor-pointer transform transition duration-300 hover:scale-[1.02] mb-8"
+                        >
+                            <div class="bg-white bg-opacity-95 rounded-xl p-5 flex items-center gap-4">
+                                <div class="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center text-amber-500 text-3xl shadow-inner">
+                                    <i class="fa-solid fa-trophy animate-pulse"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="font-extrabold text-gray-900 text-xl tracking-tight">Le Grand Test</h3>
+                                    <p class="text-sm font-medium text-amber-600 mt-1">30 QCM • Tous les niveaux</p>
+                                </div>
+                                <div>
+                                    {quizScore !== null ? (
+                                        <div class="w-12 h-12 rounded-full bg-green-100 text-green-600 font-bold flex items-center justify-center text-sm border-2 border-green-200">
+                                            {quizScore}/30
+                                        </div>
+                                    ) : (
+                                        <button class="bg-amber-500 text-white font-bold py-2 px-4 rounded-full text-sm shadow-md">
+                                            Go !
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Ton programme</h2>
+                        
+                        <div class="flex flex-col gap-4">
+                            {COURSE_DATA.map((module, index) => {
+                                const prog = progressData[module.id] || 0;
+                                const isComplete = prog === 100;
+                                
+                                return (
+                                    <div 
+                                        key={module.id} 
+                                        onClick={() => onSelectModule(module)}
+                                        class={`bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center gap-4 cursor-pointer transform transition duration-300 hover:-translate-y-1 hover:shadow-md ${isComplete ? 'border-green-200 bg-green-50/30' : ''}`}
+                                    >
+                                        <div class={`w-14 h-14 rounded-2xl bg-gradient-to-br ${module.color} flex items-center justify-center text-white text-2xl shadow-inner`}>
+                                            <i class={`fa-solid ${module.icon}`}></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h3 class="font-bold text-gray-800 text-lg">{module.title}</h3>
+                                            <p class="text-sm text-gray-500">{module.lessons.length} leçons</p>
+                                        </div>
+                                        <div>
+                                            {isComplete ? (
+                                                <div class="w-10 h-10 rounded-full bg-green-100 text-green-500 flex items-center justify-center text-xl animate-pulse-glow">
+                                                    <i class="fa-solid fa-check"></i>
+                                                </div>
+                                            ) : (
+                                                <CircularProgress progress={prog} color={module.color} />
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const LessonViewer = ({ module, onBack, onComplete }) => {
+            const [currentLesson, setCurrentLesson] = useState(0);
+            const totalLessons = module.lessons.length;
+            const progress = ((currentLesson + 1) / totalLessons) * 100;
+
+            const handleNext = () => {
+                if (currentLesson < totalLessons - 1) {
+                    setCurrentLesson(prev => prev + 1);
+                } else {
+                    onComplete(module.id);
+                }
+            };
+
+            const handlePrev = () => {
+                if (currentLesson > 0) {
+                    setCurrentLesson(prev => prev - 1);
+                }
+            };
+
+            return (
+                <div class="flex-1 flex flex-col bg-gray-50 absolute inset-0 z-20 animate-slide-in-right">
+                    <div class="bg-white px-4 py-4 flex items-center gap-4 shadow-sm z-10 relative">
+                        <button onClick={onBack} class="w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-600 transition">
+                            <i class="fa-solid fa-xmark text-xl"></i>
+                        </button>
+                        <div class="flex-1">
+                            <div class="h-2.5 w-full bg-gray-200 rounded-full overflow-hidden">
+                                <div 
+                                    class={`h-full bg-gradient-to-r ${module.color} transition-all duration-500 rounded-full`}
+                                    style={{ width: `${progress}%` }}
+                                ></div>
+                            </div>
+                        </div>
+                        <div class="text-sm font-bold text-gray-400 w-10 text-center">
+                            {currentLesson + 1}/{totalLessons}
+                        </div>
+                    </div>
+
+                    <div class="flex-1 overflow-y-auto px-6 py-6 pb-24">
+                        <div key={currentLesson} class="animate-fade-in-up bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mb-6 min-h-[60vh]">
+                            <div class={`inline-block px-3 py-1 rounded-full text-xs font-bold mb-4 bg-gradient-to-r ${module.color} text-white`}>
+                                Leçon {currentLesson + 1}
+                            </div>
+                            <h2 class="text-2xl font-black text-gray-900 mb-6 leading-tight">
+                                {module.lessons[currentLesson].title}
+                            </h2>
+                            <div 
+                                class="markdown-content text-gray-700 text-[15px]"
+                                dangerouslySetInnerHTML={{ __html: module.lessons[currentLesson].content }}
+                            ></div>
+                        </div>
+                    </div>
+
+                    <div class="absolute bottom-0 left-0 w-full p-4 glass-nav">
+                        <div class="flex gap-4">
+                            {currentLesson > 0 && (
+                                <button 
+                                    onClick={handlePrev}
+                                    class="w-14 h-14 rounded-2xl bg-white text-gray-600 border border-gray-200 flex items-center justify-center shadow-sm active:scale-95 transition"
+                                >
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </button>
+                            )}
+                            <button 
+                                onClick={handleNext}
+                                class={`flex-1 h-14 rounded-2xl text-white font-bold text-lg shadow-lg active:scale-95 transition flex items-center justify-center gap-2 bg-gradient-to-r ${module.color}`}
+                            >
+                                {currentLesson === totalLessons - 1 ? (
+                                    <>Terminer <i class="fa-solid fa-flag-checkered"></i></>
+                                ) : (
+                                    <>Suivant <i class="fa-solid fa-chevron-right"></i></>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const QuizViewer = ({ onBack, onComplete }) => {
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [answers, setAnswers] = useState(new Array(QUIZ_DATA.length).fill(null));
+            const [showResults, setShowResults] = useState(false);
+
+            const question = QUIZ_DATA[currentIndex];
+            const progress = ((currentIndex) / QUIZ_DATA.length) * 100;
+            const isLastQuestion = currentIndex === QUIZ_DATA.length - 1;
+            const hasAnsweredCurrent = answers[currentIndex] !== null;
+
+            const handleOptionSelect = (index) => {
+                const newAnswers = [...answers];
+                newAnswers[currentIndex] = index;
+                setAnswers(newAnswers);
+            };
+
+            const handleNext = () => {
+                if (isLastQuestion) {
+                    setShowResults(true);
+                } else {
+                    setCurrentIndex(prev => prev + 1);
+                }
+            };
+
+            const getLevelColor = (level) => {
+                if (level === 1) return "bg-green-100 text-green-700 border-green-200";
+                if (level === 2) return "bg-yellow-100 text-yellow-700 border-yellow-200";
+                return "bg-red-100 text-red-700 border-red-200";
+            };
+
+            if (showResults) {
+                const score = answers.reduce((acc, curr, idx) => acc + (curr === QUIZ_DATA[idx].correct ? 1 : 0), 0);
+                
+                let message = "";
+                if (score >= 25) message = "Excellent ! Tu es un vrai maître ! 🏆";
+                else if (score >= 15) message = "Bon travail, tu as l'essentiel ! 👍";
+                else message = "Il faut encore un peu réviser le cours ! 📖";
+
+                return (
+                    <div class="flex-1 flex flex-col bg-gray-50 absolute inset-0 z-30 animate-pop-in">
+                        <div class="bg-gradient-to-br from-amber-400 to-orange-500 pt-10 pb-6 px-6 text-center shadow-md relative">
+                            <button onClick={() => onComplete(score)} class="absolute top-4 left-4 w-10 h-10 rounded-full bg-white/20 text-white flex items-center justify-center backdrop-blur-md">
+                                <i class="fa-solid fa-xmark text-xl"></i>
+                            </button>
+                            <h2 class="text-3xl font-black text-white mb-2">Résultats</h2>
+                            <div class="w-24 h-24 bg-white rounded-full mx-auto flex items-center justify-center shadow-lg my-4">
+                                <span class="text-3xl font-black text-orange-500">{score}/30</span>
+                            </div>
+                            <p class="text-white font-bold text-lg">{message}</p>
+                        </div>
+                        
+                        <div class="flex-1 overflow-y-auto px-4 py-6 space-y-6">
+                            <h3 class="font-bold text-gray-800 text-xl text-center mb-2">La Correction</h3>
+                            {QUIZ_DATA.map((q, idx) => {
+                                const isCorrect = answers[idx] === q.correct;
+                                return (
+                                    <div key={idx} class={`bg-white p-4 rounded-2xl shadow-sm border ${isCorrect ? 'border-green-200' : 'border-red-200'}`}>
+                                        <div class="flex items-start gap-3 mb-2">
+                                            <div class={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${isCorrect ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
+                                                <i class={`fa-solid ${isCorrect ? 'fa-check' : 'fa-xmark'} text-sm`}></i>
+                                            </div>
+                                            <p class="font-bold text-gray-800 text-sm leading-snug">{idx + 1}. {q.q}</p>
+                                        </div>
+                                        
+                                        {!isCorrect && answers[idx] !== null && (
+                                            <div class="ml-9 mb-2 text-sm text-red-500 line-through">
+                                                {q.options[answers[idx]]}
+                                            </div>
+                                        )}
+                                        <div class="ml-9 text-sm text-green-600 font-medium bg-green-50 p-2 rounded-lg inline-block">
+                                            ✅ {q.options[q.correct]}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                            <button 
+                                onClick={() => onComplete(score)}
+                                class="w-full h-14 rounded-2xl text-white font-bold text-lg shadow-lg active:scale-95 transition bg-gray-900 mt-4"
+                            >
+                                Retour à l'accueil
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div class="flex-1 flex flex-col bg-gray-50 absolute inset-0 z-30 animate-slide-in-right">
+                    <div class="bg-white px-4 py-4 flex items-center gap-4 shadow-sm z-10 relative">
+                        <button onClick={onBack} class="w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-600 transition">
+                            <i class="fa-solid fa-xmark text-xl"></i>
+                        </button>
+                        <div class="flex-1">
+                            <div class="flex justify-between text-xs font-bold text-gray-400 mb-1 px-1">
+                                <span>Progression</span>
+                                <span>{currentIndex + 1}/30</span>
+                            </div>
+                            <div class="h-2.5 w-full bg-gray-200 rounded-full overflow-hidden">
+                                <div 
+                                    class="h-full bg-amber-500 transition-all duration-300 rounded-full"
+                                    style={{ width: `${progress}%` }}
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 overflow-y-auto px-5 py-8 pb-32 flex flex-col justify-center">
+                        <div key={currentIndex} class="animate-fade-in-up">
+                            <div class={`inline-block px-3 py-1 rounded-full text-xs font-extrabold mb-6 border ${getLevelColor(question.level)}`}>
+                                {question.text}
+                            </div>
+                            
+                            <h2 class="text-2xl font-black text-gray-900 mb-8 leading-tight">
+                                {question.q}
+                            </h2>
+                            
+                            <div class="space-y-3">
+                                {question.options.map((opt, idx) => {
+                                    const isSelected = answers[currentIndex] === idx;
+                                    return (
+                                        <div 
+                                            key={idx}
+                                            onClick={() => handleOptionSelect(idx)}
+                                            class={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 flex items-center gap-4 ${isSelected ? 'border-amber-500 bg-amber-50 shadow-md' : 'border-gray-200 bg-white hover:border-gray-300'}`}
+                                        >
+                                            <div class={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-amber-500 bg-amber-500' : 'border-gray-300'}`}>
+                                                {isSelected && <div class="w-2.5 h-2.5 bg-white rounded-full"></div>}
+                                            </div>
+                                            <span class={`text-[15px] ${isSelected ? 'text-amber-900 font-bold' : 'text-gray-700 font-medium'}`}>
+                                                {opt}
+                                            </span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="absolute bottom-0 left-0 w-full p-4 glass-nav">
+                        <button 
+                            onClick={handleNext}
+                            disabled={!hasAnsweredCurrent}
+                            class={`w-full h-14 rounded-2xl text-white font-bold text-lg shadow-lg active:scale-95 transition flex items-center justify-center gap-2 ${hasAnsweredCurrent ? 'bg-gray-900' : 'bg-gray-300 cursor-not-allowed'}`}
+                        >
+                            {isLastQuestion ? 'Voir les résultats' : 'Question suivante'}
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [activeModule, setActiveModule] = useState(null);
+            const [isQuizActive, setIsQuizActive] = useState(false);
+            const [quizScore, setQuizScore] = useState(null);
+            const [progressData, setProgressData] = useState({
+                1: 0, 2: 0, 3: 0, 4: 0
+            });
+
+            const handleModuleComplete = (moduleId) => {
+                setProgressData(prev => ({ ...prev, [moduleId]: 100 }));
+                setActiveModule(null);
+            };
+
+            const handleQuizComplete = (score) => {
+                setQuizScore(score);
+                setIsQuizActive(false);
+            };
+
+            return (
+                <div class="h-screen w-full flex flex-col relative bg-gray-50 font-sans">
+                    {!activeModule && !isQuizActive && (
+                        <>
+                            <Dashboard 
+                                onSelectModule={setActiveModule} 
+                                onStartQuiz={() => setIsQuizActive(true)}
+                                progressData={progressData}
+                                quizScore={quizScore}
+                            />
+                            
+                            <div class="absolute bottom-0 w-full h-16 glass-nav flex justify-around items-center px-4 z-10 text-gray-400">
+                                <div class="flex flex-col items-center text-indigo-600 cursor-pointer">
+                                    <i class="fa-solid fa-house text-xl mb-1"></i>
+                                    <span class="text-[10px] font-bold">Accueil</span>
+                                </div>
+                                <div class="flex flex-col items-center cursor-pointer hover:text-gray-600 transition">
+                                    <i class="fa-solid fa-chart-pie text-xl mb-1"></i>
+                                    <span class="text-[10px] font-medium">Progrès</span>
+                                </div>
+                                <div class="flex flex-col items-center cursor-pointer hover:text-gray-600 transition">
+                                    <i class="fa-solid fa-user text-xl mb-1"></i>
+                                    <span class="text-[10px] font-medium">Profil</span>
+                                </div>
+                            </div>
+                        </>
+                    )}
+
+                    {activeModule && (
+                        <LessonViewer 
+                            module={activeModule} 
+                            onBack={() => setActiveModule(null)} 
+                            onComplete={handleModuleComplete}
+                        />
+                    )}
+
+                    {isQuizActive && (
+                        <QuizViewer 
+                            onBack={() => setIsQuizActive(false)}
+                            onComplete={handleQuizComplete}
+                        />
+                    )}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
