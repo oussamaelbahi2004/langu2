@@ -1,233 +1,806 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Part 2 - Didactics of Geometry and Measurement</title>
+    <title>المراجعة التفاعلية | سوسيولوجيا التربية</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Tajawal', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Cairo', sans-serif;
-            background-color: #0f172a;
-            background-image: radial-gradient(#334155 1px, transparent 1px);
-            background-size: 20px 20px;
-            color: #f8fafc;
+            font-family: 'Tajawal', sans-serif;
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            overflow: hidden;
+            position: relative;
         }
-        .quiz-container {
-            background-color: #1e293b;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+
+        .bg-container {
+            position: absolute;
+            inset: 0;
+            z-index: -2;
+            background-color: black;
+            background-image: url('https://20essentials.github.io/project-000-128/assets/n1.avif');
+            background-position: center;
+            background-size: cover;
         }
-        .option-btn {
-            background-color: #334155;
-            color: #f1f5f9;
-            border-color: #475569;
-        }
-        .option-btn:hover:not(.disabled-btn) {
-            background-color: #475569;
-        }
-        .correct-answer {
-            background-color: #10b981 !important;
-            color: white !important;
-            border-color: #059669 !important;
-        }
-        .wrong-answer {
-            background-color: #ef4444 !important;
-            color: white !important;
-            border-color: #dc2626 !important;
-        }
-        .disabled-btn {
+
+        .bg-container .inner {
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            mix-blend-mode: overlay;
             pointer-events: none;
-            opacity: 0.7;
+            animation: moveInner 10s ease infinite alternate;
+        }
+
+        @keyframes moveInner {
+            0% { background-color: #f0f; }
+            25% { background-color: #0f0; }
+            50% { background-color: #00f; }
+            75% { background-color: #f00; }
+            100% { background-color: #ff0; }
+        }
+
+        .glass-panel {
+            background: rgba(20, 20, 25, 0.75); /* Dark Glass for readability */
+            backdrop-filter: blur(24px) saturate(150%);
+            -webkit-backdrop-filter: blur(24px) saturate(150%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+        }
+
+        .glass-input {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .glass-input:focus {
+            background: rgba(0, 0, 0, 0.7);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+            outline: none;
+        }
+
+        .glass-button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-button:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        
+        .text-shadow {
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
+<body>
 
-    <div id="quiz-screen" class="quiz-container rounded-2xl p-6 md:p-10 max-w-3xl w-full border border-slate-700">
-        <div class="text-center mb-6">
-            <h1 class="text-2xl font-bold text-red-400">الجزء الثاني: تحدي الهندسة والقياس (16-30)</h1>
+    <!-- Background Elements -->
+    <div class="bg-container">
+        <div class="inner"></div>
+    </div>
+
+    <!-- Main Revision App -->
+    <main class="w-full max-w-4xl px-4 flex flex-col h-[90vh] z-10 relative">
+        <div class="glass-panel w-full h-full flex flex-col overflow-hidden relative shadow-2xl">
+            
+            <!-- App Progress Bar -->
+            <div id="app-progress-container" class="w-full bg-black/40 h-1.5 hidden">
+                <div id="app-progress-bar" class="bg-white h-1.5 transition-all duration-500 ease-out shadow-[0_0_10px_#fff]" style="width: 0%"></div>
+            </div>
+
+            <!-- Screens Container -->
+            <div class="p-6 md:p-8 flex-grow flex flex-col overflow-y-auto">
+                
+                <!-- Welcome Screen -->
+                <div id="screen-welcome" class="flex-grow flex flex-col items-center justify-center text-center fade-in">
+                    <div class="bg-white/10 p-5 rounded-2xl mb-6 border border-white/20 shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-white drop-shadow-md" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-white mb-4 text-shadow">الاستعداد للامتحان: سوسيولوجيا التربية</h2>
+                    <p class="text-white/80 mb-8 max-w-lg leading-relaxed text-shadow text-lg">
+                        تطبيق تفاعلي للتدرب على الأسئلة المفتوحة والمقالية.
+                        <br><br>
+                        سيُعرض عليك السؤال، اكتب تحليلك في المربع المخصص، ثم قُم بمقارنته مع الإجابة النموذجية.
+                    </p>
+                    <button onclick="startApp()" class="glass-button text-white font-bold py-3 px-8 rounded-xl flex items-center gap-2">
+                        <span>ابدأ التدريب الآن</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 rtl:rotate-180" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Question Screen -->
+                <div id="screen-question" class="hidden flex-grow flex-col fade-in h-full">
+                    <div class="mb-5">
+                        <span id="q-exam-title" class="inline-block bg-white/20 text-white border border-white/30 px-4 py-1.5 rounded-full text-sm font-semibold mb-4 text-shadow backdrop-blur-md"></span>
+                        <h3 class="text-xl md:text-2xl font-bold text-white leading-snug flex items-start gap-3 text-shadow">
+                            <span id="q-number" class="bg-white/10 border border-white/20 text-white px-3 py-1 rounded-lg text-lg flex-shrink-0"></span>
+                            <span id="q-text"></span>
+                        </h3>
+                    </div>
+                    
+                    <div class="flex-grow flex flex-col mb-6">
+                        <textarea id="user-answer" class="glass-input w-full h-full min-h-[250px] p-5 rounded-2xl resize-none text-white leading-relaxed text-lg" placeholder="ابدأ بكتابة تحليلك أو مسودتك هنا..."></textarea>
+                    </div>
+
+                    <div class="flex justify-end mt-auto">
+                        <button onclick="showCorrection()" class="glass-button text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>اعتماد الإجابة وعرض التصحيح</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Correction Screen -->
+                <div id="screen-correction" class="hidden flex-grow flex-col fade-in h-full">
+                    <div class="mb-4">
+                        <p id="c-q-text" class="text-white/90 text-lg font-medium bg-black/30 p-4 rounded-xl border border-white/10 text-shadow"></p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-grow mb-6 overflow-hidden">
+                        <!-- User's Answer -->
+                        <div class="flex flex-col h-full overflow-hidden">
+                            <h4 class="text-sm font-bold text-white/70 uppercase tracking-wider mb-2 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                إجابتك
+                            </h4>
+                            <div id="c-user-answer" class="glass-input p-4 md:p-5 rounded-2xl flex-grow text-white/90 whitespace-pre-wrap overflow-y-auto leading-relaxed"></div>
+                        </div>
+
+                        <!-- Model Answer -->
+                        <div class="flex flex-col h-full overflow-hidden">
+                            <h4 class="text-sm font-bold text-green-300 uppercase tracking-wider mb-2 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                                الإجابة النموذجية
+                            </h4>
+                            <div id="c-model-answer" class="bg-green-900/40 border border-green-500/30 p-4 md:p-5 rounded-2xl flex-grow text-white whitespace-pre-wrap overflow-y-auto leading-relaxed shadow-inner"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center mt-auto border-t border-white/10 pt-4">
+                        <p class="text-sm text-white/60">قارن إجابتك لتستفيد من أخطائك.</p>
+                        <button id="btn-next" onclick="nextQuestion()" class="glass-button text-white font-bold py-2.5 px-6 rounded-xl flex items-center gap-2">
+                            <span id="btn-next-text">السؤال التالي</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 rtl:rotate-180" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- End Screen -->
+                <div id="screen-end" class="hidden flex-grow flex-col items-center justify-center text-center fade-in">
+                    <div class="bg-green-500/20 text-green-300 p-6 rounded-full mb-6 border border-green-500/30 shadow-[0_0_30px_rgba(34,197,94,0.3)]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-4xl font-bold text-white mb-4 text-shadow">أحسنت! أكملت المراجعة</h2>
+                    <p class="text-white/80 mb-8 max-w-md text-lg text-shadow">لقد راجعت جميع المحاور والأسئلة. تذكر أن الممارسة المستمرة هي سر التفوق.</p>
+                    <button onclick="resetApp()" class="glass-button text-white font-bold py-3 px-8 rounded-xl flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        <span>إعادة المراجعة</span>
+                    </button>
+                </div>
+
+            </div>
         </div>
+    </main>
+
+    <!-- Floating Music Player Widget -->
+    <div id="music-widget" class="fixed bottom-6 left-6 z-50 flex flex-col items-start transition-transform touch-none" style="will-change: left, top;">
         
-        <div class="flex justify-between items-center mb-6">
-            <span class="text-red-400 font-bold bg-red-950 py-1 px-4 rounded-full border border-red-800" id="question-counter">سؤال 1 / 15</span>
-            <span class="text-green-400 font-bold bg-green-950 py-1 px-4 rounded-full border border-green-800" id="score-display">النقاط: 0</span>
-        </div>
-        
-        <div class="w-full bg-slate-700 rounded-full h-2.5 mb-8">
-            <div id="progress-bar" class="bg-red-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+        <!-- Hidden Youtube Player -->
+        <div id="yt-player-container" class="hidden"></div>
+
+        <!-- Collapsed State (Circle) -->
+        <div id="music-toggle-btn" class="w-14 h-14 rounded-full glass-panel flex items-center justify-center cursor-move hover:bg-white/20 transition-all hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.1)] relative z-10 group">
+            <svg class="w-6 h-6 text-white pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+            </svg>
+            <span id="playing-indicator" class="absolute top-0 right-0 flex h-3 w-3 hidden pointer-events-none">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+            </span>
         </div>
 
-        <h2 id="question-text" class="text-xl font-bold text-white mb-8 leading-relaxed">جاري التحميل...</h2>
-        
-        <div id="options-container" class="space-y-4"></div>
+        <!-- Expanded State -->
+        <div id="music-expanded" class="glass-panel hidden w-72 md:w-80 p-4 flex-col gap-3 shadow-2xl relative mt-2 cursor-default">
+            <!-- Drag Handle -->
+            <div id="music-drag-handle" class="w-full flex justify-center pb-2 cursor-move opacity-50 hover:opacity-100 transition-opacity">
+                <div class="w-10 h-1.5 bg-white/30 rounded-full pointer-events-none"></div>
+            </div>
 
-        <div id="feedback-container" class="mt-6 hidden">
-            <p id="feedback-text" class="font-bold text-lg mb-4"></p>
-            <button id="next-btn" onclick="nextQuestion()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-xl transition duration-300 hidden">
-                السؤال التالي
-            </button>
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-lg bg-black/40 border border-white/20 flex items-center justify-center flex-shrink-0 overflow-hidden shadow-lg relative pointer-events-none">
+                    <svg class="w-6 h-6 text-white/50 absolute" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
+                    <img id="music-cover" src="" alt="cover" class="w-full h-full object-cover relative z-10 opacity-80 mix-blend-screen hidden">
+                </div>
+                
+                <div class="flex-grow min-w-0 pointer-events-none">
+                    <h4 id="music-title" class="text-white font-bold text-sm truncate">Lofi Study Beats</h4>
+                    <p id="music-artist" class="text-white/60 text-xs truncate">Focus Music</p>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <button onclick="prevTrack()" class="text-white/70 hover:text-white transition-colors p-1">
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                    </button>
+                    <button onclick="togglePlay()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors">
+                        <svg id="play-icon" class="w-4 h-4 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        <svg id="pause-icon" class="w-4 h-4 fill-current hidden" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                    </button>
+                    <button onclick="nextTrack()" class="text-white/70 hover:text-white transition-colors p-1">
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2 text-[10px] text-white/50 font-mono mt-1">
+                <span id="music-current-time" class="pointer-events-none">00:00</span>
+                <input type="range" id="music-progress" class="flex-grow h-1 bg-white/20 rounded-full appearance-none cursor-pointer accent-white" value="0" min="0" max="100">
+            </div>
         </div>
     </div>
 
+    <!-- Application Logic (JS) -->
     <script>
-        const questionsPart2 = [
+        const db = [
             {
-                q: "16. الخطوة التأسيسية الأولى في التدرج الديداكتيكي لبناء مفهوم القياس هي:",
-                options: ["A. المقارنة المباشرة", "B. الإدراك الحسي والتقدير", "C. القياس بواسطة وحدة اعتباطية", "D. القياس بواسطة وحدة معيارية عالمية"],
-                ans: 1 
+                exam: "الامتحان الأول: مدخل إلى سوسيولوجيا التربية",
+                qNum: "س1",
+                question: "ناقش الفرق الجوهري بين سوسيولوجيا التربية وسيكولوجيا التربية في مقاربتها للظاهرة التربوية.",
+                answer: "تختلف سوسيولوجيا التربية بشكل جذري عن سيكولوجيا التربية في زاوية معالجة الظاهرة التربوية. سيكولوجيا التربية تهتم بدراسة وتحليل الظاهرة التربوية انطلاقاً مما هو نفسي أو فردي. أي أنها تركز على مواضيع دقيقة تخص المتعلم كفرد، مثل آليات التعلم والاكتساب، القدرات الخاصة، أنواع الذكاء، الذاكرة، ومراحل النمو.\n\nفي المقابل، تتجاوز سوسيولوجيا التربية هذا البعد الفردي لتنفتح على مقاربة شاملة. فهي تدرس الأنظمة التربوية، والتفاعلات الاجتماعية داخل المحيط الأسري والمدرسي، وتطرح أسئلة كبرى حول أدوار المدرسة في عمليتي التكيف والتغيير الاجتماعي. كما تبحث في أسباب الفشل الدراسي ومسألة تكافؤ الفرص، مما يجعلها تنفتح بشكل أوسع على المجالات الاجتماعية، والاقتصادية، والسياسية لتحليل الظواهر التربوية وتفسيرها."
             },
             {
-                q: "17. ما هو الهدف الديداكتيكي الدقيق لمرحلة الإدراك الحسي في القياس؟",
-                options: ["A. حفظ جدول التحويلات المتري", "B. عزل المقدار المستهدف عن باقي الخصائص الفيزيائية للشيء", "C. استخدام المسطرة المدرجة بمهارة", "D. تحويل الوحدات بشكل صحيح"],
-                ans: 1 
+                exam: "الامتحان الأول: مدخل إلى سوسيولوجيا التربية",
+                qNum: "س2",
+                question: "تتبع التطور التاريخي لسوسيولوجيا التربية، مبرزاً أهم ما ميز مرحلة الألفية الثالثة (المرحلة المعاصرة).",
+                answer: "مرت سوسيولوجيا التربية بأربع مراحل أساسية؛ بدأت بـ 'مرحلة التأسيس' في أواخر القرن التاسع عشر مع إميل دوركايم. ثم تلتها 'مرحلة التطور والازدهار' في الستينيات مع باحثين مثل بيير بورديو وكلود باسرون، حيث ركزت السوسيولوجيا النقدية على سؤال اللامساواة. بعد ذلك جاءت 'مرحلة المراجعة والتجاوز'، وصولاً إلى 'المرحلة المعاصرة' التي ركزت على المناهج والطرائق.\n\nأما في 'الألفية الثالثة'، فقد أصبحت المدرسة ظاهرة معقدة جداً. لم يعد دورها مقتصراً فقط على الإدماج والتنشئة الاجتماعية وتقديم ثقافة موحدة، بل أصبح همها الأساسي هو تأهيل المتعلمين لتلبية قانون الطلب والعرض في السوق الرأسمالية. وتجلى ذلك في التركيز على تطوير الكفاءات المهنية والإنجازية للمتعلمين وتنمية مهاراتهم التطبيقية لضمان اندماجهم السلس في سوق الشغل."
             },
             {
-                q: "18. خاصية التعدي في مقارنة الأطوال يتم بناؤها ذهنيا خلال أي مرحلة؟",
-                options: ["A. القياس المعياري", "B. المقارنة المباشرة باستخدام التطابق", "C. التقدير البصري", "D. الحساب الكسري"],
-                ans: 1 
+                exam: "الامتحان الثاني: المقاربات والنظريات السوسيولوجية",
+                qNum: "س1",
+                question: "كيف ينظر إميل دوركايم (المقاربة الوظيفية) للتربية والمدرسة؟ وكيف يربطها بتحقيق التضامن الاجتماعي؟",
+                answer: "يعتبر إميل دوركايم مؤسس المدرسة الوظيفية، ويرى أن التربية ليست عملية فردية بل هي 'الفعل الذي تمارسه الأجيال الراشدة على الأجيال الصغيرة'. هدف التربية عنده هو نقل الطفل من وضع أناني غير اجتماعي إلى وضع اجتماعي يجعله قادراً على تحمل حياة الجماعة. المدرسة تلعب دور الأداة الأساسية للتنشئة الاجتماعية؛ فهي تكمل دور الأسرة لغرس قيم الانضباط.\n\nدوركايم يربط التربية بالتضامن الاجتماعي بشكل وثيق. في المجتمعات التقليدية البسيطة، تعزز التربية 'التضامن الآلي' القائم على التشابه. أما في المجتمعات الحديثة والصناعية، فالتعليم يعزز 'التضامن العضوي' الذي يقوم على التخصص، تكامل الأدوار، والانضباط."
             },
             {
-                q: "19. الانتقال إلى استخدام الوحدة المعيارية يتم تبريره بيداغوجيا عبر خلق وضعية تبرز:",
-                options: ["A. التكلفة الباهظة للوحدات الاعتباطية", "B. أزمة تواصل ناتجة عن اختلاف نتائج القياس بالوحدات الاعتباطية", "C. سهولة الضرب في عشرة", "D. ضرورة استخدام الأدوات البلاستيكية"],
-                ans: 1 
+                exam: "الامتحان الثاني: المقاربات والنظريات السوسيولوجية",
+                qNum: "س2",
+                question: "انطلاقاً من النظرية النقدية لبيير بورديو، اشرح كيف تقوم المدرسة بإعادة الإنتاج الاجتماعي وممارسة العنف الرمزي.",
+                answer: "حسب بيير بورديو، المدرسة لا توفر فرصاً متكافئة، بل هي آلة لإعادة إنتاج التراتبية الاجتماعية تحت غطاء 'الجدارة الفردية'. يعتمد بورديو على مفهوم 'الرأسمال الثقافي' (اللغة، الذوق، المعارف)، والذي يمتلكه أبناء الطبقات العليا، مما يسهل نجاحهم.\n\nهذا التفضيل يولد 'العنف الرمزي'، وهو سيطرة خفية تُمارس بالقبول الطوعي. المدرسة تفرض ثقافة الطبقة البرجوازية وتجعلها تبدو طبيعية. وعندما يفشل أبناء الطبقات الدنيا، يتم تصوير فشلهم على أنه 'نقص في الذكاء'، وليس إقصاءً مبنياً على خلفيتهم الطبقية، مما يضمن استمرار 'إعادة الإنتاج'."
             },
             {
-                q: "20. نشاط المسطرة المكسورة يعتبر معالجة ديداكتيكية موجهة خصيصا لتجاوز أي عائق؟",
-                options: ["A. الخلط بين المساحة والمحيط", "B. العجز عن تحويل المتر إلى سنتيمتر", "C. عد الخطوط العمودية بدلا من عد الفراغات بين الأرقام", "D. الخلط بين الحجم والكتلة"],
-                ans: 2 
+                exam: "الامتحان الثالث: مسار تطور المدرسة المغربية",
+                qNum: "س1",
+                question: "تميز التعليم في فترة الحماية الفرنسية (1912-1956) بطابع طائفي. وضح ذلك مبرزاً رد فعل الحركة الوطنية من خلال 'المدارس الحرة'.",
+                answer: "خلال الحماية، سعت فرنسا لتطبيق سياسة 'فرق تسد'. تم تقسيم تعليم المسلمين إلى: تعليم للنخبة (أبناء الأعيان) للإدارة، تعليم شعبي للحرف، وتعليم للبادية للفلاحة. كما صدر 'الظهير البربري' لإنشاء مدارس فرنسية-بربرية تقصي العربية والإسلام بغرض استلاب الأمازيغ.\n\nكرد فعل، أسست الحركة الوطنية 'المدارس الحرة' لمقاومة الاستعمار الثقافي، الحفاظ على الهوية العربية الإسلامية، وزرع الوعي الوطني. شكلت مراكز للمقاومة، وفتحت أبوابها للمغاربة لتعويض النقص في المدارس العمومية الفرنسية التي استقطبت 2% فقط من الأطفال."
             },
             {
-                q: "21. في تجربة بياجيه لانحفاظ السعة، سكب السائل في إناء طويل وضيق يختبر قدرة الطفل على:",
-                options: ["A. قياس المليلترات بدقة", "B. إدراك أن السعة تظل ثابتة رغم تغير المستوى الظاهري للسائل", "C. حساب حجم الأسطوانة", "D. التمييز بين الكتلة والوزن"],
-                ans: 1 
+                exam: "الامتحان الثالث: مسار تطور المدرسة المغربية",
+                qNum: "س2",
+                question: "بعد الاستقلال، تبنى المغرب سياسة 'البديل الوطني' عبر المبادئ الأربعة. ناقش هذه المبادئ والتحديات وصولاً إلى مذهب بنهيمة.",
+                answer: "بعد الاستقلال، أقر المغرب أربعة مبادئ: التعميم (توسيع الولوج)، التوحيد (دمج التعليم التقليدي والعصري)، التعريب، والمغربة (تكوين أطر مغربية).\n\nلكن الإصلاح واجه تحديات: التوحيد لم يكن سلساً، التعريب خلق أزمة لغوية باقتصاره على الأدبيات، والتعميم كان كمياً على حساب الجودة. مع تزايد أعداد المتمدرسين، ظهر 'مذهب بنهيمة' الذي أقر بعجز ميزانية الدولة، واعتبر المبادئ غير واقعية. لذا تم تضييق قاعدة المقبولين وإخضاع التعليم للمحك الاقتصادي، وظلت المنظومة تعاني من الهدر والفشل الدراسي."
             },
             {
-                q: "22. العائق الإبستمولوجي للحجم عند قياس الكتل يتمثل في اعتقاد المتعلم أن:",
-                options: ["A. الكتلة تتغير بتغير درجة الحرارة", "B. الجسم الأكبر حجما هو الأثقل كتلة بالضرورة", "C. الكتلة تقاس فقط بالكيلوغرام", "D. الغازات ليس لها كتلة"],
-                ans: 1 
+                exam: "الامتحان الرابع: سوسيولوجيا المدرسة القروية",
+                qNum: "س1",
+                question: "استناداً إلى سوسيولوجيا الفضاء عند هنري لوفيفر، كيف يؤثر البعد المجالي على واقع التعليم في الوسط القروي؟",
+                answer: "حسب هنري لوفيفر، الفضاء ليس وعاءً محايداً، بل منتج اجتماعي يعبر عن التراتبيات. المدرسة ترتبط بالمجال الجغرافي الذي توجد فيه.\n\nفي الوسط القروي، يؤثر الفضاء في التمدرس بسبب المسافات والتشتت. الإشكالية الكبرى هي أن المدرسة الوطنية 'مخططة بروح حضرية'، مما يجعلها مؤسسة 'محمولة' وغير مندمجة في الواقع القروي (فيزيائياً وثقافياً ولغوياً). هذا يخلق 'صراع الفضاءات الثقافية'، ويجعل التفاوت ليس مجرد نقص موارد، بل نتيجة لبنية فضائية تُنتج الإقصاء."
             },
             {
-                q: "23. ما الذي يشكل الصعوبة الكبرى في حساب مدد الزمن مقارنة بباقي المقادير؟",
-                options: ["A. الزمن لا يمكن رؤيته بالعين المجردة", "B. الاعتماد على نظام مختلط ستيني واثنا عشري بدلا من النظام العشري الخالص", "C. غياب وحدات عالمية لقياس الزمن", "D. الزمن يتحرك في اتجاه واحد فقط"],
-                ans: 1 
-            },
-            {
-                q: "24. المعادلة الذهبية التي تشكل جسر الربط بين السعة والحجم في المنهاج هي:",
-                options: ["A. واحد لتر يساوي واحد متر مكعب", "B. واحد لتر يساوي واحد ديسيمتر مكعب", "C. واحد مليلتر يساوي واحد ديسيمتر مكعب", "D. واحد لتر يساوي واحد سنتيمتر مكعب"],
-                ans: 1 
-            },
-            {
-                q: "25. ديداكتيكيا، كيف ينبغي تقديم مفهوم المساحة قبل إعطاء الصيغة الرياضية؟",
-                options: ["A. عبر حفظ جدول الضرب", "B. عبر عملية تغطية سطح ما ببلاطات اعتباطية وتكميمها", "C. عبر حساب المحيط وقسمته على اثنان", "D. عبر رسم أقطار المضلع"],
-                ans: 1 
-            },
-            {
-                q: "26. التبرير البيداغوجي لتخصيص خانتين لكل وحدة في جدول تحويلات المساحة ينبني على:",
-                options: ["A. اتفاق اعتباطي بحت لجعل الحساب أكثر تعقيدا", "B. الواقع الهندسي المتمثل في كون المربع المتري يتضمن مئة مربع من الوحدة الأصغر مباشرة", "C. كون المساحة مفهوما ثنائي الأبعاد يتطلب الجمع", "D. ضرورة فصل الطول عن العرض بصريا"],
-                ans: 1 
-            },
-            {
-                q: "27. تدريس النقود والعملات يشكل المدخل الواقعي والتطبيقي الأول لتقديم:",
-                options: ["A. الهندسة الإقليدية", "B. الأعداد العشرية قبل التطرق لها بشكل نظري مجرد", "C. مفهوم اللانهاية", "D. المعادلات الجبرية"],
-                ans: 1 
-            },
-            {
-                q: "28. طريقة البقال في رد الصرف تنمي بالأساس أي مهارة في الحساب الذهني؟",
-                options: ["A. الطرح العمودي الاعتيادي", "B. الجمع التصاعدي وصولا إلى العدد المستهدف", "C. القسمة المطولة", "D. الضرب التقاطعي"],
-                ans: 1 
-            },
-            {
-                q: "29. في سياق المحيط والمساحة، المثال المضاد المتمثل في قطع زاوية من مربع من ورق مقوى يبرهن للمتعلم على أن:",
-                options: ["A. المساحة والمحيط ينقصان معا بشكل متناسب", "B. المساحة تنقص بينما المحيط يمكن أن يظل ثابتا دون تغيير", "C. المحيط يزداد بينما المساحة تظل ثابتة", "D. المساحة والمحيط يصبحان مستحيلي الحساب"],
-                ans: 1 
-            },
-            {
-                q: "30. ما هو الفرق الديداكتيكي الجوهري بين السعة والحجم كما يدرس في السلك الابتدائي؟",
-                options: ["A. السعة مفهوم داخلي بينما الحجم مفهوم خارجي", "B. السعة تقيس الأجسام الصلبة بينما الحجم يقيس السوائل", "C. السعة تستخدم المتر المكعب بينما الحجم يستخدم اللتر", "D. السعة ثابتة بينما الحجم يتغير بتغير درجة الحرارة"],
-                ans: 0 
+                exam: "الامتحان الرابع: سوسيولوجيا المدرسة القروية",
+                qNum: "س2",
+                question: "تعيش المدرسة القروية مفارقة؛ فهي من جهة قناة للاتصال والتغيير، ومن جهة تخلق فجوة ثقافية وتمزقاً هوياتياً. وضح هذا الطرح.",
+                answer: "المدرسة القروية محفز للتحولات؛ التمدرس مؤشر لانخراط القرية في الدولة الحديثة، قناة لقيم المواطنة، وأفق للترقي الاجتماعي وتغيير تمثلات النوع (بروز الفتاة المتمدرسة).\n\nلكن من جهة أخرى، تخلق فجوة ثقافية لأن المنهاج الوطني لا يراعي خصوصيات القرية. يُطلب من التلميذ 'الانسلاخ' عن بيئته ليتوافق مع نمط حضري. هذا يسبب تمزقاً هوياتياً وازدواجية لغوية وثقافية بين اللغة الأم ولغة المدرسة، مما يجعل التعليم يحمل خطر الإحباط وفقدان الانتماء عبر الهجرة أو الانقطاع."
             }
         ];
 
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let answered = false;
+        let currentIndex = 0;
 
-        function loadQuestion() {
-            answered = false;
-            document.getElementById('next-btn').classList.add('hidden');
-            document.getElementById('feedback-container').classList.add('hidden');
-            const optionsContainer = document.getElementById('options-container');
-            optionsContainer.innerHTML = '';
-            
-            const currentQ = questionsPart2[currentQuestionIndex];
-            
-            document.getElementById('question-counter').innerText = `سؤال ${currentQuestionIndex + 1} / ${questionsPart2.length}`;
-            document.getElementById('score-display').innerText = `النقاط: ${score}`;
-            document.getElementById('progress-bar').style.width = `${((currentQuestionIndex) / questionsPart2.length) * 100}%`;
-            
-            document.getElementById('question-text').innerText = currentQ.q;
-            
-            currentQ.options.forEach((opt, index) => {
-                const btn = document.createElement('button');
-                btn.className = "option-btn w-full text-right border-2 font-semibold py-4 px-6 rounded-xl transition duration-300 transform hover:-translate-y-1";
-                btn.innerText = opt;
-                btn.onclick = () => selectOption(index, btn);
-                optionsContainer.appendChild(btn);
+        const screens = {
+            welcome: document.getElementById('screen-welcome'),
+            question: document.getElementById('screen-question'),
+            correction: document.getElementById('screen-correction'),
+            end: document.getElementById('screen-end')
+        };
+        
+        const appProgressContainer = document.getElementById('app-progress-container');
+        const appProgressBar = document.getElementById('app-progress-bar');
+        
+        function hideAllScreens() {
+            Object.values(screens).forEach(screen => {
+                if(screen) {
+                    screen.classList.add('hidden');
+                    screen.classList.remove('flex');
+                }
             });
         }
 
-        function selectOption(selectedIndex, selectedBtn) {
-            if (answered) return;
-            answered = true;
-
-            const currentQ = questionsPart2[currentQuestionIndex];
-            const allButtons = document.getElementById('options-container').children;
-
-            for (let btn of allButtons) {
-                btn.classList.add('disabled-btn');
-                btn.classList.remove('hover:-translate-y-1');
+        function showScreen(screenEl) {
+            if(screenEl) {
+                screenEl.classList.remove('hidden');
+                screenEl.classList.add('flex');
             }
+        }
 
-            const feedbackText = document.getElementById('feedback-text');
-            if (selectedIndex === currentQ.ans) {
-                selectedBtn.classList.add('correct-answer');
-                score++;
-                document.getElementById('score-display').innerText = `النقاط: ${score}`;
-                feedbackText.innerText = "إجابة دقيقة! 🎯";
-                feedbackText.className = "font-bold text-xl mb-4 text-green-400";
+        function updateProgress() {
+            if(currentIndex === 0 && !screens.welcome.classList.contains('hidden')) {
+                appProgressContainer.classList.add('hidden');
+                return;
+            }
+            appProgressContainer.classList.remove('hidden');
+            const percentage = ((currentIndex) / db.length) * 100;
+            appProgressBar.style.width = percentage + '%';
+        }
+
+        function startApp() {
+            currentIndex = 0;
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            hideAllScreens();
+            const q = db[currentIndex];
+            
+            document.getElementById('q-exam-title').innerText = q.exam;
+            document.getElementById('q-number').innerText = q.qNum;
+            document.getElementById('q-text').innerText = q.question;
+            document.getElementById('user-answer').value = ''; 
+            
+            showScreen(screens.question);
+            updateProgress();
+            
+            setTimeout(() => document.getElementById('user-answer').focus(), 100);
+        }
+
+        function showCorrection() {
+            const userAnswerText = document.getElementById('user-answer').value.trim();
+            const q = db[currentIndex];
+
+            hideAllScreens();
+            
+            document.getElementById('c-q-text').innerText = q.question;
+            
+            const userAnsDiv = document.getElementById('c-user-answer');
+            if(userAnswerText === '') {
+                userAnsDiv.innerHTML = '<span class="text-white/40 italic">لم تقم بكتابة أي إجابة.</span>';
             } else {
-                selectedBtn.classList.add('wrong-answer');
-                allButtons[currentQ.ans].classList.add('correct-answer');
-                feedbackText.innerText = "إجابة خاطئة!";
-                feedbackText.className = "font-bold text-xl mb-4 text-red-400";
+                userAnsDiv.innerText = userAnswerText;
+            }
+            
+            document.getElementById('c-model-answer').innerText = q.answer;
+
+            const btnNextText = document.getElementById('btn-next-text');
+            if (currentIndex === db.length - 1) {
+                btnNextText.innerText = "إنهاء المراجعة";
+            } else {
+                btnNextText.innerText = "السؤال التالي";
             }
 
-            document.getElementById('feedback-container').classList.remove('hidden');
-            document.getElementById('next-btn').classList.remove('hidden');
+            showScreen(screens.correction);
+            
+            const percentage = ((currentIndex + 1) / db.length) * 100;
+            appProgressBar.style.width = percentage + '%';
         }
 
         function nextQuestion() {
-            currentQuestionIndex++;
-            if (currentQuestionIndex < questionsPart2.length) {
-                loadQuestion();
+            currentIndex++;
+            if (currentIndex < db.length) {
+                renderQuestion();
             } else {
-                document.getElementById('quiz-screen').innerHTML = `
-                    <div class="text-center p-8">
-                        <h1 class="text-4xl font-bold text-white mb-4">انتهى التحدي الكامل!</h1>
-                        <p class="text-xl text-slate-300 mb-6">نتيجتك في الجزء الثاني: <span class="text-red-500 font-black text-4xl">${score} / 15</span></p>
-                        <p class="text-lg text-slate-400">أتمنى أن يكون الاختبار مفيداً لك في مراجعتك.</p>
-                        <button onclick="location.reload()" class="mt-8 bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-8 rounded-full text-xl transition duration-300 shadow-lg">
-                            إعادة الجزء الثاني
-                        </button>
-                    </div>
-                `;
+                showEndScreen();
             }
         }
 
-        // Start automatically
-        window.onload = loadQuestion;
+        function showEndScreen() {
+            hideAllScreens();
+            showScreen(screens.end);
+            appProgressBar.style.width = '100%';
+        }
+
+        function resetApp() {
+            currentIndex = 0;
+            appProgressBar.style.width = '0%';
+            hideAllScreens();
+            showScreen(screens.welcome);
+            appProgressContainer.classList.add('hidden');
+        }
+
+        const playlist = [
+            {
+                type: "youtube",
+                title: "WHO I WAS",
+                artist: "NF, mgk",
+                videoId: "J7nwTWxdJbw",
+                cover: "https://img.youtube.com/vi/J7nwTWxdJbw/hqdefault.jpg"
+            },
+            {
+                type: "audio",
+                title: "Lofi Study Beats",
+                artist: "Focus Music",
+                src: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3"
+            },
+            {
+                type: "audio",
+                title: "Deep Focus",
+                artist: "Ambient",
+                src: "https://cdn.pixabay.com/download/audio/2022/11/22/audio_febc508520.mp3?filename=ambient-classical-guitar-144998.mp3"
+            }
+        ];
+
+        let currentTrack = 0;
+        let isPlaying = false;
+        const audio = new Audio();
+        audio.volume = 0.5;
+
+        // --- YouTube API Setup ---
+        let ytPlayer;
+        let ytPlayerReady = false;
+        let isYoutubeTrack = false;
+        let ytProgressInterval;
+
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        window.onYouTubeIframeAPIReady = function() {
+            ytPlayer = new YT.Player('yt-player-container', {
+                height: '0',
+                width: '0',
+                videoId: '',
+                playerVars: { 'playsinline': 1, 'controls': 0, 'disablekb': 1 },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        };
+
+        function onPlayerReady(event) {
+            ytPlayerReady = true;
+            ytPlayer.setVolume(50);
+            if (isYoutubeTrack) {
+                ytPlayer.cueVideoById(playlist[currentTrack].videoId);
+            }
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.PLAYING) {
+                updateUIPlaying();
+                clearInterval(ytProgressInterval);
+                ytProgressInterval = setInterval(updateYTProgress, 500);
+            } else if (event.data === YT.PlayerState.PAUSED) {
+                updateUIPaused();
+                clearInterval(ytProgressInterval);
+            } else if (event.data === YT.PlayerState.ENDED) {
+                clearInterval(ytProgressInterval);
+                nextTrack();
+            }
+        }
+
+        function updateYTProgress() {
+            if (!ytPlayer || !isPlaying || !isYoutubeTrack) return;
+            const duration = ytPlayer.getDuration();
+            const currentTime = ytPlayer.getCurrentTime();
+            
+            if (duration > 0) {
+                const progressPercent = (currentTime / duration) * 100;
+                progressEl.value = progressPercent;
+                
+                const mins = Math.floor(currentTime / 60);
+                const secs = Math.floor(currentTime % 60);
+                timeEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+        }
+        // -------------------------
+
+        const playIcon = document.getElementById('play-icon');
+        const pauseIcon = document.getElementById('pause-icon');
+        const titleEl = document.getElementById('music-title');
+        const artistEl = document.getElementById('music-artist');
+        const progressEl = document.getElementById('music-progress');
+        const timeEl = document.getElementById('music-current-time');
+        const playingIndicator = document.getElementById('playing-indicator');
+        const coverEl = document.getElementById('music-cover');
+
+        function updateUIPlaying() {
+            isPlaying = true;
+            playIcon.classList.add('hidden');
+            pauseIcon.classList.remove('hidden');
+            playingIndicator.classList.remove('hidden');
+        }
+
+        function updateUIPaused() {
+            isPlaying = false;
+            playIcon.classList.remove('hidden');
+            pauseIcon.classList.add('hidden');
+            playingIndicator.classList.add('hidden');
+        }
+
+        function loadTrack(index) {
+            const track = playlist[index];
+            titleEl.innerText = track.title;
+            artistEl.innerText = track.artist;
+            progressEl.value = 0;
+            timeEl.innerText = "00:00";
+            
+            if (track.cover) {
+                coverEl.src = track.cover;
+                coverEl.classList.remove('hidden');
+            } else {
+                coverEl.classList.add('hidden');
+            }
+
+            if (track.type === 'youtube') {
+                isYoutubeTrack = true;
+                audio.pause();
+                if (ytPlayerReady) {
+                    if (isPlaying) ytPlayer.loadVideoById(track.videoId);
+                    else ytPlayer.cueVideoById(track.videoId);
+                }
+            } else {
+                isYoutubeTrack = false;
+                if (ytPlayerReady && typeof ytPlayer.pauseVideo === 'function') {
+                    ytPlayer.pauseVideo();
+                }
+                audio.src = track.src;
+                audio.load();
+            }
+        }
+
+        function togglePlay() {
+            if (isPlaying) {
+                if (isYoutubeTrack && ytPlayerReady) {
+                    ytPlayer.pauseVideo();
+                } else {
+                    audio.pause();
+                    updateUIPaused();
+                }
+            } else {
+                if (isYoutubeTrack && ytPlayerReady) {
+                    ytPlayer.playVideo();
+                } else {
+                    const playPromise = audio.play();
+                    if (playPromise !== undefined) {
+                        playPromise.then(_ => {
+                            updateUIPlaying();
+                        }).catch(error => {
+                            console.log("Playback interrupted:", error);
+                        });
+                    }
+                }
+            }
+        }
+
+        function nextTrack() {
+            currentTrack = (currentTrack + 1) % playlist.length;
+            loadTrack(currentTrack);
+            if (isPlaying) {
+                if (isYoutubeTrack) {
+                    if (ytPlayerReady) ytPlayer.loadVideoById(playlist[currentTrack].videoId);
+                } else {
+                    audio.play().catch(e => console.log(e));
+                }
+            }
+        }
+
+        function prevTrack() {
+            currentTrack = (currentTrack - 1 + playlist.length) % playlist.length;
+            loadTrack(currentTrack);
+            if (isPlaying) {
+                if (isYoutubeTrack) {
+                    if (ytPlayerReady) ytPlayer.loadVideoById(playlist[currentTrack].videoId);
+                } else {
+                    audio.play().catch(e => console.log(e));
+                }
+            }
+        }
+
+        audio.addEventListener('timeupdate', () => {
+            if (isYoutubeTrack) return;
+            if (audio.duration) {
+                const progressPercent = (audio.currentTime / audio.duration) * 100;
+                progressEl.value = progressPercent;
+                
+                const mins = Math.floor(audio.currentTime / 60);
+                const secs = Math.floor(audio.currentTime % 60);
+                timeEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+        });
+
+        audio.addEventListener('ended', nextTrack);
+
+        progressEl.addEventListener('input', (e) => {
+            const seekPercent = e.target.value / 100;
+            if (isYoutubeTrack && ytPlayerReady) {
+                const duration = ytPlayer.getDuration();
+                ytPlayer.seekTo(seekPercent * duration, true);
+            } else {
+                const seekTime = seekPercent * audio.duration;
+                audio.currentTime = seekTime;
+            }
+        });
+
+        // Initialize first track
+        loadTrack(0);
+        // Initialize App View
+        hideAllScreens();
+        showScreen(screens.welcome);
+
+        const widget = document.getElementById('music-widget');
+        const toggleBtn = document.getElementById('music-toggle-btn');
+        const expandedView = document.getElementById('music-expanded');
+        
+        let isDragging = false;
+        let hasDragged = false;
+        let offsetX, offsetY;
+
+        function dragStart(e) {
+            // Only drag from the circle button or the top drag handle
+            if (!e.target.closest('#music-toggle-btn') && !e.target.closest('#music-drag-handle')) {
+                return;
+            }
+            
+            isDragging = true;
+            hasDragged = false;
+            
+            const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+            const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+            
+            const rect = widget.getBoundingClientRect();
+            
+            // Switch from bottom/left to absolute top/left for smooth dragging
+            if (widget.style.bottom !== 'auto') {
+                widget.style.bottom = 'auto';
+                widget.style.left = rect.left + 'px';
+                widget.style.top = rect.top + 'px';
+            }
+            
+            offsetX = clientX - rect.left;
+            offsetY = clientY - rect.top;
+            
+            // Prevent text selection while dragging
+            document.body.style.userSelect = 'none';
+        }
+
+        function drag(e) {
+            if (!isDragging) return;
+            
+            hasDragged = true;
+            e.preventDefault(); 
+            
+            const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+            const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+            
+            let newX = clientX - offsetX;
+            let newY = clientY - offsetY;
+            
+            // Keep widget inside the screen boundaries
+            const maxX = window.innerWidth - widget.offsetWidth;
+            const maxY = window.innerHeight - widget.offsetHeight;
+            
+            newX = Math.max(0, Math.min(newX, maxX));
+            newY = Math.max(0, Math.min(newY, maxY));
+            
+            widget.style.left = newX + 'px';
+            widget.style.top = newY + 'px';
+        }
+
+        function dragEnd() {
+            if (!isDragging) return;
+            isDragging = false;
+            document.body.style.userSelect = '';
+        }
+
+        // Mouse Events
+        widget.addEventListener('mousedown', dragStart);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', dragEnd);
+        
+        // Touch Events for Mobile
+        widget.addEventListener('touchstart', dragStart, {passive: false});
+        document.addEventListener('touchmove', drag, {passive: false});
+        document.addEventListener('touchend', dragEnd);
+
+        // Toggle Open/Close Logic
+        toggleBtn.addEventListener('click', () => {
+            if (hasDragged) return; // Prevent opening if it was just dragged
+            
+            expandedView.classList.remove('hidden');
+            expandedView.classList.add('flex');
+            toggleBtn.classList.add('hidden');
+            
+            // Adjust position slightly if opening it pushes it out of bounds
+            setTimeout(() => {
+                const rect = widget.getBoundingClientRect();
+                if (rect.bottom > window.innerHeight) {
+                    widget.style.top = (window.innerHeight - rect.height - 20) + 'px';
+                }
+                if (rect.right > window.innerWidth) {
+                     widget.style.left = (window.innerWidth - rect.width - 20) + 'px';
+                }
+            }, 10);
+        });
+
+        // Close when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!widget.contains(e.target) && !expandedView.classList.contains('hidden')) {
+                expandedView.classList.add('hidden');
+                expandedView.classList.remove('flex');
+                toggleBtn.classList.remove('hidden');
+            }
+        });
+
     </script>
 </body>
 </html>
